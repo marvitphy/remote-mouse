@@ -1,0 +1,14 @@
+{
+  "name": "remote-mouse",
+  "version": "1.0.0",
+  "description": "Control your computer mouse from your phone via local network",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.16.0",
+    "koffi": "^2.9.0"
+  }
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Macros</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      width: 100%; height: 100vh; height: 100dvh;
+      background: #0a0a0a; color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow: hidden; user-select: none; -webkit-user-select: none;
+    }
+    .container {
+      height: 100%; display: flex; flex-direction: column; padding: 12px; gap: 8px;
+    }
+    .header {
+      display: flex; justify-content: space-between; align-items: center; padding: 8px 4px;
+    }
+    .header h1 { font-size: 18px; font-weight: 500; }
+    .status { width: 8px; height: 8px; border-radius: 50%; background: #e74c3c; }
+    .status.connected { background: #2ecc71; }
+    .nav { display: flex; gap: 8px; }
+    .nav a {
+      padding: 6px 12px; background: rgba(255,255,255,0.1); border-radius: 6px;
+      color: #888; text-decoration: none; font-size: 12px;
+    }
+    .nav a.active { background: rgba(52,152,219,0.3); color: #3498db; }
+    .grid {
+      flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    }
+    .btn {
+      background: rgba(255,255,255,0.08); border: none; border-radius: 12px;
+      color: white; font-size: 12px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px; cursor: pointer;
+      transition: all 0.15s; touch-action: manipulation;
+    }
+    .btn:active { background: rgba(255,255,255,0.2); transform: scale(0.95); }
+    .btn .icon { font-size: 24px; }
+    .btn.media { background: rgba(155,89,182,0.2); }
+    .btn.media:active { background: rgba(155,89,182,0.4); }
+    .btn.volume { background: rgba(52,152,219,0.2); }
+    .btn.volume:active { background: rgba(52,152,219,0.4); }
+    .btn.system { background: rgba(46,204,113,0.2); }
+    .btn.system:active { background: rgba(46,204,113,0.4); }
+    .btn.edit { background: rgba(241,196,15,0.2); }
+    .btn.edit:active { background: rgba(241,196,15,0.4); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Macros</h1>
+      <div class="nav">
+        <a href="/">Touchpad</a>
+        <a href="/macros.html" class="active">Macros</a>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="grid">
+      <button class="btn media" data-action="prevtrack"><span class="icon">⏮</span>Prev</button>
+      <button class="btn media" data-action="playpause"><span class="icon">⏯</span>Play/Pause</button>
+      <button class="btn media" data-action="nexttrack"><span class="icon">⏭</span>Next</button>
+
+      <button class="btn volume" data-action="volumedown"><span class="icon">🔉</span>Vol -</button>
+      <button class="btn volume" data-action="mute"><span class="icon">🔇</span>Mute</button>
+      <button class="btn volume" data-action="volumeup"><span class="icon">🔊</span>Vol +</button>
+
+      <button class="btn system" data-action="alttab"><span class="icon">⇥</span>Alt+Tab</button>
+      <button class="btn system" data-action="desktop"><span class="icon">🖥</span>Desktop</button>
+      <button class="btn system" data-action="screenshot"><span class="icon">📷</span>Screenshot</button>
+
+      <button class="btn edit" data-action="copy"><span class="icon">📋</span>Copy</button>
+      <button class="btn edit" data-action="paste"><span class="icon">📄</span>Paste</button>
+      <button class="btn edit" data-action="undo"><span class="icon">↩</span>Undo</button>
+
+      <button class="btn edit" data-action="selectall"><span class="icon">☑</span>Select All</button>
+      <button class="btn edit" data-action="save"><span class="icon">💾</span>Save</button>
+      <button class="btn edit" data-action="find"><span class="icon">🔍</span>Find</button>
+    </div>
+  </div>
+  <script>
+    const status = document.getElementById('status');
+    let ws;
+
+    function connect() {
+      const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${protocol}//${location.host}`);
+      ws.onopen = () => status.className = 'status connected';
+      ws.onclose = () => { status.className = 'status'; setTimeout(connect, 2000); };
+    }
+
+    function send(data) {
+      if (ws && ws.readyState === 1) ws.send(JSON.stringify(data));
+    }
+
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.dataset.action;
+        send({ type: 'shortcut', action });
+        navigator.vibrate?.(15);
+      });
+    });
+
+    connect();
+  </script>
+</body>
+</html>

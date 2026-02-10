@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remote Mouse - Connect</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #0a0a0a;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 40px;
+      font-size: 14px;
+    }
+    .qr-box {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      display: inline-block;
+      margin-bottom: 30px;
+    }
+    #qr {
+      width: 200px;
+      height: 200px;
+    }
+    .url {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 18px;
+      color: #3498db;
+      background: rgba(52, 152, 219, 0.1);
+      padding: 12px 24px;
+      border-radius: 8px;
+      display: inline-block;
+      margin-bottom: 30px;
+    }
+    .gestures {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      max-width: 400px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .gesture {
+      background: rgba(255,255,255,0.05);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .gesture strong {
+      color: #3498db;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Remote Mouse</h1>
+    <p class="subtitle">Scan with your phone to connect</p>
+
+    <div class="qr-box">
+      <img id="qr" alt="QR Code">
+    </div>
+
+    <div class="url" id="url">Loading...</div>
+
+    <div class="gestures">
+      <div class="gesture"><strong>1 finger drag</strong> Move cursor</div>
+      <div class="gesture"><strong>1 tap</strong> Left click</div>
+      <div class="gesture"><strong>2 taps</strong> Double click</div>
+      <div class="gesture"><strong>2 fingers tap</strong> Right click</div>
+      <div class="gesture"><strong>2 fingers drag</strong> Scroll</div>
+      <div class="gesture"><strong>Pinch</strong> Zoom</div>
+      <div class="gesture"><strong>Hold 400ms</strong> Drag & drop</div>
+      <div class="gesture"><strong>Hold 500ms</strong> Precision mode</div>
+      <div class="gesture"><strong>3 fingers up</strong> Alt+Tab</div>
+      <div class="gesture"><strong>3 fingers down</strong> Show desktop</div>
+      <div class="gesture"><strong>3 fingers left/right</strong> Switch desktop</div>
+    </div>
+  </div>
+
+  <script>
+    fetch('/qr')
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('url').textContent = data.url;
+        document.getElementById('qr').src =
+          'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' +
+          encodeURIComponent(data.url);
+      });
+  </script>
+</body>
+</html>
